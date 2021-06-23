@@ -36,9 +36,26 @@ export const useRequest = () => {
     }
   }
 
+  const del = async (url, id) => {
+    try {
+      if (!loading) {
+        setLoading(true)
+        const response = await fetch(`${url}/${id}`, {
+          method: 'DELETE',
+        })
+
+        const result = await response.json()
+        setLoading(false)
+
+        return result
+      }
+    } catch (e) { }
+  }
+
   return {
     loading,
     request,
     post,
+    del,
   }
 }

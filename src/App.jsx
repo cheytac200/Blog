@@ -12,7 +12,7 @@ function App() {
   const [posts, setPosts] = useState([]);
   const [currentPost, setCurrentPost] = useState({});
 
-  const { post, request, loading } = useRequest();
+  const { post, request, loading, del } = useRequest();
 
 
   const loadPosts = async () => {
@@ -28,6 +28,12 @@ function App() {
     const newData = await post(
       'https://bloggy-api.herokuapp.com/posts', newPost
       )
+    setPosts((prevState) => [newData, ...prevState])
+  }
+
+  const handlerDeletePost = async (id) => {
+    await del('https://bloggy-api.herokuapp.com/posts', id)
+
     await loadPosts()
   }
 
@@ -42,8 +48,13 @@ function App() {
   return (
     <main className="App__main">
       <div className="App__sidebar">
-        <NewPost loading={loading} onSubmit={handlerSubmitPost} />
-        <PostList loading={loading} posts={posts} onSelectPost={onSelectPost} />
+        <NewPost loading={loading} onSubmit={handlerSubmitPost}/>
+        <PostList
+          loading={loading}
+          posts={posts}
+          onSelectPost={onSelectPost}
+          onDelete={handlerDeletePost}
+        />
       </div>
       <div className="App__content">
         {Object.keys(currentPost).length !== 0 && (

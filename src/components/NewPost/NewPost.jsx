@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import './NewPost.scss';
 
-export const NewPost = ({ addNewPost }) => {
+export const NewPost = ({ onSubmit }) => {
 
   const [postTitle, setTitle] = useState('');
   const [postBody, setBody] = useState('');
@@ -14,7 +14,7 @@ export const NewPost = ({ addNewPost }) => {
       return false
     }
 
-    addNewPost({
+    onSubmit({
       title: postTitle,
       body: postBody,
     });

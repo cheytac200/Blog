@@ -3,19 +3,32 @@ import React, { useEffect, useState } from 'react';
 
 import { PostList } from './components/PostList/PostList';
 import { NewPost } from './components/NewPost/NewPost';
-import { PostDetail } from './components/PostDetail/PostDetail';
+import { PostDetailContainer } from './containers/PostDetailContainer/PostDetailContainer';
 import { useRequest } from './hooks/useRequest';
-
 
 
 function App() {
 
   const [posts, setPosts] = useState([]);
-  const { request, loading } = useRequest();
+  const [currentPost, setCurrentPost] = useState({});
+
+  const { post, request, loading } = useRequest();
+
 
   const loadPosts = async () => {
     const data = await request('https://bloggy-api.herokuapp.com/posts')
     setPosts(data)
+  }
+
+  const onSelectPost = (post) => {
+    setCurrentPost(post)
+  }
+
+  const handlerSubmitPost = async (newPost) => {
+    const newData = await post(
+      'https://bloggy-api.herokuapp.com/posts', newPost
+      )
+    await loadPosts()
   }
 
   useEffect(() => {
@@ -25,29 +38,17 @@ function App() {
     load().then()
   }, [])
 
-  const addNewPost = ( title, body ) => {
-    const newPost = {
-      title,
-      body,
-    };
-
-    setPosts(prevState => {
-      return [
-        newPost,
-        ...prevState,
-      ]
-    })
-
-  }
 
   return (
     <main className="App__main">
       <div className="App__sidebar">
-        <NewPost loading={loading} addNewPost={addNewPost}/>
-        <PostList loading={loading} posts={posts} />
+        <NewPost loading={loading} onSubmit={handlerSubmitPost} />
+        <PostList loading={loading} posts={posts} onSelectPost={onSelectPost} />
       </div>
       <div className="App__content">
-        {/* <PostDetail /> */}
+        {Object.keys(currentPost).length !== 0 && (
+          <PostDetailContainer loading={loading} currentPost={currentPost}/>
+        )}
       </div>
 
 

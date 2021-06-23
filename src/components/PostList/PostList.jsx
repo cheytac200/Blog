@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import './PostList.scss';
 
 
-export const PostList = ({ loading, posts }) => (
+export const PostList = ({ loading, posts, onSelectPost }) => (
   <div className="PostList">
     <h2>Posts:</h2>
       {loading ? (
@@ -18,26 +18,14 @@ export const PostList = ({ loading, posts }) => (
                 <h3>{post.title}</h3>
                 <p>{post.body}</p>
                 <div className="PostList">
-                  <p>Comments:</p>
                 </div>
                 <div className="PostList__buttons">
                   <button
                     type="button"
                     className="PostList__button button"
+                    onClick={onSelectPost.bind('', post)}
                   >
-                    Comment
-                  </button>
-                  <button
-                    type="button"
-                    className="PostList__button button"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    type="button"
-                    className="PostList__button button"
-                  >
-                    Delete
+                    Post details
                   </button>
                 </div>
               </li>

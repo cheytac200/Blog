@@ -15,8 +15,30 @@ export const useRequest = () => {
     } catch (e) {}
   }
 
+  const post = async (url, data) => {
+    try {
+      if(!loading){
+        setLoading(true);
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+          },
+          body: JSON.stringify(data),
+        })
+
+        const result = await response.json()
+        setLoading(false);
+        return result;
+      }
+    } catch (e) {
+
+    }
+  }
+
   return {
     loading,
     request,
+    post,
   }
 }

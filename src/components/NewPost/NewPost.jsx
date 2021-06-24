@@ -74,7 +74,7 @@ export const NewPost = ({ onSubmit, editablePost }) => {
 NewPost.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   editablePost: PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    body: PropTypes.string.isRequired,
+    title: PropTypes.string,
+    body: PropTypes.string,
   }).isRequired,
 };

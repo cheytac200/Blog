@@ -1,23 +1,27 @@
-import { useState } from "react";
+import { useState } from 'react';
 
 export const useRequest = () => {
   const [loading, setLoading] = useState(false);
   // const [error, setError] = useState('');
 
-  const request = async (url) => {
+  const request = async(url) => {
     try {
-      setLoading(true)
-      const response = await fetch(url)
-      const result = await response.json()
+      setLoading(true);
+      const response = await fetch(url);
+      const result = await response.json();
 
-      setLoading(false)
-      return result
-    } catch (e) {}
-  }
+      setLoading(false);
 
-  const post = async (url, data) => {
+      return result;
+    } catch (e) {
+      throw new Error(e);
+    }
+  };
+
+  // eslint-disable-next-line consistent-return
+  const post = async(url, data) => {
     try {
-      if(!loading){
+      if (!loading) {
         setLoading(true);
         const response = await fetch(url, {
           method: 'POST',
@@ -25,58 +29,70 @@ export const useRequest = () => {
             'Content-Type': 'application/json;charset=utf-8',
           },
           body: JSON.stringify(data),
-        })
+        });
 
-        const result = await response.json()
         setLoading(false);
+
+        const result = await response.json();
+
+        setLoading(false);
+
         return result;
       }
     } catch (e) {
-
+      throw new Error(e);
     }
-  }
+  };
 
-  const del = async (url, id) => {
+  // eslint-disable-next-line consistent-return
+  const del = async(url, id) => {
     try {
       if (!loading) {
-        setLoading(true)
+        setLoading(true);
         const response = await fetch(`${url}/${id}`, {
           method: 'DELETE',
-        })
+        });
 
-        const result = await response.json()
-        setLoading(false)
+        const result = await response.json();
 
-        return result
+        setLoading(false);
+
+        return result;
       }
-    } catch (e) { }
-  }
+    } catch (e) {
+      throw new Error(e);
+    }
+  };
 
-  const put = async (url, id, data) => {
+  // eslint-disable-next-line consistent-return
+  const put = async(url, id, data) => {
     try {
       if (!loading) {
-        setLoading(true)
+        setLoading(true);
         const response = await fetch(`${url}/${id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json;charset=utf-8',
           },
           body: JSON.stringify(data),
-        })
+        });
 
-        const result = await response.json()
-        setLoading(false)
+        const result = await response.json();
 
-        return result
+        setLoading(false);
+
+        return result;
       }
-    } catch (e) { }
-  }
-  
+    } catch (e) {
+      throw new Error(e);
+    }
+  };
+
   return {
     loading,
     request,
     post,
     del,
     put,
-  }
-}
+  };
+};

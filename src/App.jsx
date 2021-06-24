@@ -3,65 +3,75 @@ import React, { useEffect, useState } from 'react';
 
 import { PostList } from './components/PostList/PostList';
 import { NewPost } from './components/NewPost/NewPost';
-import { PostDetailContainer } from './containers/PostDetailContainer/PostDetailContainer';
+import { PostDetailContainer } from
+  './containers/PostDetailContainer/PostDetailContainer';
 import { useRequest } from './hooks/useRequest';
 
-
 function App() {
-
   const [posts, setPosts] = useState([]);
   const [currentPost, setCurrentPost] = useState({});
   const [editablePost, setEditablePost] = useState({});
   const { post, request, loading, del, put } = useRequest();
 
+  const loadPosts = async() => {
+    const data = await request('https://bloggy-api.herokuapp.com/posts');
 
-  const loadPosts = async () => {
-    const data = await request('https://bloggy-api.herokuapp.com/posts')
-    setPosts(data)
-  }
+    setPosts(data);
+  };
 
-  const handlerSelectPost = (post) => {
-    setCurrentPost(post)
-  }
+  // const handlerSelectPost = (cuPost) => {
+  //   setCurrentPost(currentPost);
+  // };
 
-  const handlerSubmitPost = async (newPost) => {
-    if(Object.keys(editablePost).length !== 0) {
+  const handlerSubmitPost = async(newPost) => {
+    if (Object.keys(editablePost).length !== 0) {
       await put(
         'https://bloggy-api.herokuapp.com/posts',
-        editablePost.id, newPost)
+        editablePost.id, newPost,
+      );
 
-        setPosts(prevState => prevState.map(item => {
-          if (item.id === editablePost.id){
-            return {...item, ...newPost}
-          }
-            return item;
-        }))
-        setEditablePost({})
+      setPosts(prevState => prevState.map((item) => {
+        if (item.id === editablePost.id) {
+          return {
+            ...item,
+            ...newPost,
+          };
+        }
+
+        return item;
+      }));
+      setEditablePost({});
     } else {
       const newData = await post(
-        'https://bloggy-api.herokuapp.com/posts', newPost
-      )
-      setPosts((prevState) => [newData, ...prevState])
+        'https://bloggy-api.herokuapp.com/posts', newPost,
+      );
+
+      setPosts(prevState => [newData, ...prevState]);
     }
-  }
+  };
 
-  const handlerDeletePost = async (id) => {
-    await del('https://bloggy-api.herokuapp.com/posts', id)
+  const handlerDeletePost = async(id) => {
+    const shouldDelete = window.confirm(
+      'Вы действительно хотите удалить этот пост?',
+    );
 
-    await loadPosts()
-  }
+    if (shouldDelete) {
+      await del('https://bloggy-api.herokuapp.com/posts', id);
+      await loadPosts();
+    }
+  };
 
-  const handlerEditPost = (post) => {
-    setEditablePost(post)
-  }
+  // const handlerEditPost = (post) => {
+  //   setEditablePost(post);
+  // };
 
   useEffect(() => {
-    const load = async () => {
-      await loadPosts()
-    }
-    load().then()
-  }, [])
+    const load = async() => {
+      await loadPosts();
+    };
 
+    load().then();
+  }, []);
 
   return (
     <main className="App__main">
@@ -74,18 +84,16 @@ function App() {
         <PostList
           loading={loading}
           posts={posts}
-          onSelectPost={handlerSelectPost}
+          onSelectPost={setCurrentPost}
           onDelete={handlerDeletePost}
-          onEditPost={handlerEditPost}
+          onEditPost={setEditablePost}
         />
       </div>
       <div className="App__content">
         {Object.keys(currentPost).length !== 0 && (
-          <PostDetailContainer loading={loading} currentPost={currentPost}/>
+          <PostDetailContainer loading={loading} currentPost={currentPost} />
         )}
       </div>
-
-
     </main>
   );
 }

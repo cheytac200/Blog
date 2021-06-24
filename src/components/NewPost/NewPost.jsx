@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import './NewPost.scss';
 
-export const NewPost = ({ onSubmit }) => {
+export const NewPost = ({ onSubmit, editablePost }) => {
 
   const [postTitle, setTitle] = useState('');
   const [postBody, setBody] = useState('');
+  const [isEditable, setIsEditable] = useState(false);
+
+  const clearForm = () => {
+    setTitle('');
+    setBody('');
+  }
 
   const handeSubmit = (event) => {
     event.preventDefault();
@@ -19,9 +25,18 @@ export const NewPost = ({ onSubmit }) => {
       body: postBody,
     });
 
-    setTitle('');
-    setBody('');
+    clearForm()
   };
+
+  useEffect(() => {
+    setIsEditable(Object.keys(editablePost).length !== 0)
+    if(isEditable) {
+      setTitle(editablePost.title)
+      setBody(editablePost.body)
+    } else {
+      clearForm()
+    }
+  }, [editablePost])
 
    return (
      <div className="NewPost">
@@ -43,11 +58,13 @@ export const NewPost = ({ onSubmit }) => {
         onChange={event => setBody(event.target.value)}
       />
        <button
-        type="submit"
         onClick={handeSubmit}
         className="NewPost__button"
        >
-        Add Post</button>
+        {isEditable
+          ? 'Edit current post'
+          : 'Add new post'}
+        </button>
      </div>
    )
 }

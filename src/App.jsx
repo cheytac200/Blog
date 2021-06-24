@@ -11,8 +11,8 @@ function App() {
 
   const [posts, setPosts] = useState([]);
   const [currentPost, setCurrentPost] = useState({});
-
-  const { post, request, loading, del } = useRequest();
+  const [editablePost, setEditablePost] = useState({});
+  const { post, request, loading, del, put } = useRequest();
 
 
   const loadPosts = async () => {
@@ -20,21 +20,39 @@ function App() {
     setPosts(data)
   }
 
-  const onSelectPost = (post) => {
+  const handlerSelectPost = (post) => {
     setCurrentPost(post)
   }
 
   const handlerSubmitPost = async (newPost) => {
-    const newData = await post(
-      'https://bloggy-api.herokuapp.com/posts', newPost
+    if(Object.keys(editablePost).length !== 0) {
+      await put(
+        'https://bloggy-api.herokuapp.com/posts',
+        editablePost.id, newPost)
+
+        setPosts(prevState => prevState.map(item => {
+          if (item.id === editablePost.id){
+            return {...item, ...newPost}
+          }
+            return item;
+        }))
+        setEditablePost({})
+    } else {
+      const newData = await post(
+        'https://bloggy-api.herokuapp.com/posts', newPost
       )
-    setPosts((prevState) => [newData, ...prevState])
+      setPosts((prevState) => [newData, ...prevState])
+    }
   }
 
   const handlerDeletePost = async (id) => {
     await del('https://bloggy-api.herokuapp.com/posts', id)
 
     await loadPosts()
+  }
+
+  const handlerEditPost = (post) => {
+    setEditablePost(post)
   }
 
   useEffect(() => {
@@ -48,12 +66,17 @@ function App() {
   return (
     <main className="App__main">
       <div className="App__sidebar">
-        <NewPost loading={loading} onSubmit={handlerSubmitPost}/>
+        <NewPost
+          loading={loading}
+          onSubmit={handlerSubmitPost}
+          editablePost={editablePost}
+        />
         <PostList
           loading={loading}
           posts={posts}
-          onSelectPost={onSelectPost}
+          onSelectPost={handlerSelectPost}
           onDelete={handlerDeletePost}
+          onEditPost={handlerEditPost}
         />
       </div>
       <div className="App__content">
